@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:collectors/DioClient.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,7 +59,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
   int _counter = 0;
+
+
+  Future<void> get() async {
+    try {
+      await dotenv.load(fileName: ".env");
+      DioClient dioClient = DioClient();
+      dioClient.insert("user", ["Diogo Goiana"]);
+      dioClient.getAll("user");
+    } catch (e) {
+      print(e);
+    }
+
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -69,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -113,7 +133,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () async => {
+          await get()
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
