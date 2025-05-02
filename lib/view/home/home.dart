@@ -37,23 +37,23 @@ class _HomePageState extends GeneralPageViewState<HomePage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Faturas Pendentes",
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white, 
-                              ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/history');
-                          },
-                        ),
-                      ],
+                    child: InkWell(
+                      onTap: () { 
+                        Navigator.pushNamed(context, '/history');
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Faturas Pendentes",
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white, 
+                                ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios, color: Colors.white), 
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10.0),
