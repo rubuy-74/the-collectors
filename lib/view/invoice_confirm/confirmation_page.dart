@@ -21,7 +21,7 @@ class ConfirmationPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SafeArea( 
+      body: SafeArea(
         bottom: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -31,27 +31,25 @@ class ConfirmationPage extends StatelessWidget {
               const SizedBox(height: 20),
               const Text(
                 'Fatura',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               Text(
                 '1 de maio 2025',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
               const SizedBox(height: 30),
               Center(
-                child: Row( // Changed from Column to Row
-                  mainAxisAlignment: MainAxisAlignment.center, // Center items horizontally
-                  crossAxisAlignment: CrossAxisAlignment.center, // Center items vertically
+                child: Row(
+                  // Changed from Column to Row
+                  mainAxisAlignment:
+                      MainAxisAlignment.center, // Center items horizontally
+                  crossAxisAlignment:
+                      CrossAxisAlignment.center, // Center items vertically
                   children: [
                     // Column for the text elements
                     const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start, // Align text to the start
                       children: [
                         Text(
                           'Quase lá...', // Changed text
@@ -71,7 +69,9 @@ class ConfirmationPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(width: 20), // Add space between text and image
+                    const SizedBox(
+                      width: 20,
+                    ), // Add space between text and image
                     // Image on the right
                     Image.asset(
                       'assets/imgs/confirm_illustration.png',
@@ -84,7 +84,8 @@ class ConfirmationPage extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   itemCount: 3,
-                  separatorBuilder: (context, index) => const SizedBox(height: 15),
+                  separatorBuilder:
+                      (context, index) => const SizedBox(height: 15),
                   itemBuilder: (context, index) {
                     return const UserInfoCard(
                       userName: 'Adriano',

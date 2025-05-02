@@ -41,8 +41,7 @@ class BillCard extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 22,
-                        backgroundColor:
-                            Colors.grey.shade200,
+                        backgroundColor: Colors.grey.shade200,
                         child: Icon(logoIcon, color: Colors.black54, size: 24),
                       ),
                       SizedBox(width: 12),
@@ -77,8 +76,7 @@ class BillCard extends StatelessWidget {
             SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   '\$${amount.toStringAsFixed(2)}',
@@ -140,7 +138,7 @@ class BillCard extends StatelessWidget {
         (avatarWidgets.length * (2 * avatarRadius - overlap)) + overlap;
     if (avatarWidgets.isEmpty) {
       stackWidth = 0;
-    } else if (avatarWidgets.length == 1){
+    } else if (avatarWidgets.length == 1) {
       stackWidth = 2 * avatarRadius;
     }
 

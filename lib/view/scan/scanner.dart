@@ -4,6 +4,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:usettle/models/item.dart';
+import 'package:usettle/models/receipt.dart';
 
 class Scanner extends StatefulWidget {
   const Scanner({super.key});
@@ -29,10 +31,7 @@ class ScannerState extends State<Scanner> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
-      _cameraController = CameraController(
-        _cameras![0],
-        ResolutionPreset.high,
-      );
+      _cameraController = CameraController(_cameras![0], ResolutionPreset.high);
 
       await _cameraController!.initialize();
 
@@ -72,57 +71,90 @@ class ScannerState extends State<Scanner> {
       Ensure the ENTIRE output is valid JSON and nothing else.  Do NOT include any explanatory text, markdown formatting, or anything else before or after the JSON list.  Do not include any trailing commas.
       ''';
 
-      gemini.textAndImage(
-        text: prompt,
-        images: [imageBytes],
-      ).then((output) {
-        String? rawResponse = output?.content?.parts?.last.text;
+      gemini
+          .textAndImage(text: prompt, images: [imageBytes])
+          .then((output) {
+            String? rawResponse = output?.content?.parts?.last.text;
 
-        if (rawResponse != null) {
-          rawResponse = rawResponse.trim();
-          if (rawResponse.startsWith('```json')) {
-            rawResponse = rawResponse.substring(7);
-          }
-          if (rawResponse.endsWith('```')) {
-            rawResponse = rawResponse.substring(0, rawResponse.length - 3);
-          }
-          if (rawResponse.startsWith('`')) {
-            rawResponse = rawResponse.substring(1);
-          }
-          if (rawResponse.endsWith('`')) {
-            rawResponse = rawResponse.substring(0, rawResponse.length - 1);
-          }
+            if (rawResponse != null) {
+              rawResponse = rawResponse.trim();
+              if (rawResponse.startsWith('```json')) {
+                rawResponse = rawResponse.substring(7);
+              }
+              if (rawResponse.endsWith('```')) {
+                rawResponse = rawResponse.substring(0, rawResponse.length - 3);
+              }
+              if (rawResponse.startsWith('`')) {
+                rawResponse = rawResponse.substring(1);
+              }
+              if (rawResponse.endsWith('`')) {
+                rawResponse = rawResponse.substring(0, rawResponse.length - 1);
+              }
 
-          try {
-            final jsonResponse = jsonDecode(rawResponse);
-            final formattedJson =
-                JsonEncoder.withIndent('  ').convert(jsonResponse);
+              try {
+                final jsonResponse = jsonDecode(rawResponse);
+                final formattedJson = JsonEncoder.withIndent(
+                  '  ',
+                ).convert(jsonResponse);
 
+                setState(() {
+                  _geminiResponse = formattedJson;
+
+                  final items =
+                      (jsonResponse as List).expand((item) {
+                        final name = item['product'] as String;
+                        final price =
+                            double.tryParse(item['price'].toString()) ?? 0.0;
+                        final quantity =
+                            double.tryParse(item['quantity'].toString()) ?? 1.0;
+                        return List.generate(
+                          quantity.toInt(),
+                          (_) =>
+                              Item(id: 0, name: name, price: price / quantity),
+                        );
+                      }).toList();
+
+                  // Assign unique IDs to each item
+                  for (int i = 0; i < items.length; i++) {
+                    items[i] = Item(
+                      id: i,
+                      name: items[i].name,
+                      price: items[i].price,
+                    );
+                  }
+
+                  final receipt = Receipt(
+                    total: items.fold(0.0, (sum, item) => sum + item.price),
+                    date: DateTime.now(),
+                    items: items,
+                  );
+
+                  Navigator.pushNamed(context, '/contacts', arguments: receipt);
+                });
+              } catch (e) {
+                print('Error decoding JSON after cleaning: $e');
+                setState(() {
+                  _geminiResponse =
+                      'Error: Could not parse Gemini response as JSON after cleaning. Raw response: $rawResponse. Error: $e';
+                });
+              }
+            } else {
+              setState(() {
+                _geminiResponse = 'Error: Gemini returned a null response.';
+              });
+            }
+          })
+          .catchError((e) {
+            print('Error calling Gemini: $e');
             setState(() {
-              _geminiResponse = formattedJson;
+              _geminiResponse = 'Error calling Gemini: $e';
             });
-          } catch (e) {
-            print('Error decoding JSON after cleaning: $e');
+          })
+          .whenComplete(() {
             setState(() {
-              _geminiResponse =
-                  'Error: Could not parse Gemini response as JSON after cleaning. Raw response: $rawResponse. Error: $e';
+              _isProcessing = false;
             });
-          }
-        } else {
-          setState(() {
-            _geminiResponse = 'Error: Gemini returned a null response.';
           });
-        }
-      }).catchError((e) {
-        print('Error calling Gemini: $e');
-        setState(() {
-          _geminiResponse = 'Error calling Gemini: $e';
-        });
-      }).whenComplete(() {
-        setState(() {
-          _isProcessing = false;
-        });
-      });
     } catch (e) {
       print('Error taking picture or processing: $e');
       setState(() {
@@ -141,20 +173,21 @@ class ScannerState extends State<Scanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isCameraInitialized
-          ? Stack(
-              children: [
-                Positioned.fill(
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: _cameraController!.value.previewSize!.height,
-                      height: _cameraController!.value.previewSize!.width,
-                      child: CameraPreview(_cameraController!),
+      body:
+          _isCameraInitialized
+              ? Stack(
+                children: [
+                  Positioned.fill(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _cameraController!.value.previewSize!.height,
+                        height: _cameraController!.value.previewSize!.width,
+                        child: CameraPreview(_cameraController!),
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
+                  Positioned(
                     left: 15,
                     child: SafeArea(
                       child: Container(
@@ -163,16 +196,17 @@ class ScannerState extends State<Scanner> {
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
-                          onPressed: () =>
-                              Navigator.popAndPushNamed(context, '/home'),
+                          onPressed:
+                              () => Navigator.popAndPushNamed(context, '/home'),
                           icon: PhosphorIcon(
                             color: Colors.black,
                             PhosphorIcons.arrowLeft(PhosphorIconsStyle.regular),
                           ),
                         ),
                       ),
-                    )),
-                Positioned(
+                    ),
+                  ),
+                  Positioned(
                     left: 15,
                     child: SafeArea(
                       child: Container(
@@ -188,59 +222,62 @@ class ScannerState extends State<Scanner> {
                           ),
                         ),
                       ),
-                    )),
-                Positioned(
-                  bottom: 50,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: _isProcessing
-                        ? CircularProgressIndicator()
-                        : Container(
-                            decoration: BoxDecoration(
-                              color: Colors.green[800],
-                              shape: BoxShape.circle,
-                            ),
-                            padding: EdgeInsets.all(12),
-                            child: IconButton(
-                              onPressed: _takePictureAndAnalyze,
-                              icon: PhosphorIcon(
-                                color: Colors.white,
-                                PhosphorIcons.scan(PhosphorIconsStyle.regular),
-                                size: 35,
-                              ),
-                            ),
-                          ),
+                    ),
                   ),
-                ),
-                if (_geminiResponse.isNotEmpty)
                   Positioned(
-                    bottom: 120, 
-                    left: 20,
-                    right: 20,
-                    child: Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.height *
-                            0.5,
-                      ),
-                      padding: EdgeInsets.all(12), 
-                      decoration: BoxDecoration(
-                        color: Colors.black
-                            .withAlpha(191), 
-                        borderRadius:
-                            BorderRadius.circular(8.0), 
-                      ),
-                      child: SingleChildScrollView(
-                        child: Text(
-                          _geminiResponse,
-                          style: TextStyle(color: Colors.white, fontSize: 14),
+                    bottom: 50,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child:
+                          _isProcessing
+                              ? CircularProgressIndicator()
+                              : Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.green[800],
+                                  shape: BoxShape.circle,
+                                ),
+                                padding: EdgeInsets.all(12),
+                                child: IconButton(
+                                  onPressed: _takePictureAndAnalyze,
+                                  icon: PhosphorIcon(
+                                    color: Colors.white,
+                                    PhosphorIcons.scan(
+                                      PhosphorIconsStyle.regular,
+                                    ),
+                                    size: 35,
+                                  ),
+                                ),
+                              ),
+                    ),
+                  ),
+                  /*
+                  if (_geminiResponse.isNotEmpty)
+                    Positioned(
+                      bottom: 120,
+                      left: 20,
+                      right: 20,
+                      child: Container(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.5,
+                        ),
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withAlpha(191),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Text(
+                            _geminiResponse,
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            )
-          : Center(child: CircularProgressIndicator()),
+                    */
+                ],
+              )
+              : Center(child: CircularProgressIndicator()),
     );
   }
 }

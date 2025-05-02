@@ -2,11 +2,7 @@ import 'package:usettle/view/components/account_mbway_selector.dart';
 import 'package:flutter/material.dart';
 
 class UserInfoCard extends StatelessWidget {
-  const UserInfoCard({
-    super.key,
-    required this.userName,
-    required this.amount,
-  });
+  const UserInfoCard({super.key, required this.userName, required this.amount});
 
   final String userName;
   final double amount;
@@ -36,29 +32,21 @@ class UserInfoCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 20,
-             backgroundImage: AssetImage('assets/imgs/placeholder_avatar.png'), 
-             backgroundColor: Colors.grey[300],
+            backgroundImage: AssetImage('assets/imgs/placeholder_avatar.png'),
+            backgroundColor: Colors.grey[300],
           ),
           const SizedBox(width: 12.0),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(userName, style: const TextStyle(fontSize: 16)),
               Text(
-                userName,
-                style: const TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              Text(
-                '${amount.toStringAsFixed(2)} \€', 
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+                '${amount.toStringAsFixed(2)} \€',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ],
           ),
-          const SizedBox(width: 20.0), 
+          const SizedBox(width: 20.0),
 
           const AccountMbwaySelector(),
         ],

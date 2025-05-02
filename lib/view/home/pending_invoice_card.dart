@@ -29,13 +29,18 @@ class PendingInvoiceCard extends StatelessWidget {
             const SizedBox(height: 8.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: avatarUrls.map((url) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                child: CircleAvatar(
-                  radius: 20,
-                  backgroundImage: AssetImage(url),
-                ),
-              )).toList(),
+              children:
+                  avatarUrls
+                      .map(
+                        (url) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundImage: AssetImage(url),
+                          ),
+                        ),
+                      )
+                      .toList(),
             ),
           ],
         ),

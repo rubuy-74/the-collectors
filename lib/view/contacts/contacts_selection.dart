@@ -3,6 +3,10 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:usettle/models/participant.dart';
+import 'package:usettle/models/profile.dart';
+import 'package:usettle/models/receipt.dart';
+import 'package:usettle/view/assignment/assignment.dart';
 
 class ContactsSelectionPage extends StatefulWidget {
   const ContactsSelectionPage({super.key});
@@ -78,6 +82,8 @@ class ContactsSelectionPageState extends State<ContactsSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final receipt = ModalRoute.of(context)?.settings.arguments as Receipt?;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -161,7 +167,43 @@ class ContactsSelectionPageState extends State<ContactsSelectionPage> {
                         shadowColor: Colors.black26,
                       ),
                       onPressed: () {
-                        // TODO: Change page
+                        final selectedParticipants =
+                            _selectedContacts
+                                .map(
+                                  (contact) => Participant(
+                                    id: 0, // TODO: Get id
+                                    person: Profile(
+                                      name: contact.displayName,
+                                      contact:
+                                          contact.phones.isNotEmpty
+                                              ? contact.phones.first.number
+                                              : '',
+                                      avatarImage: contact.thumbnail,
+                                    ),
+                                    items: [],
+                                  ),
+                                )
+                                .toList();
+
+                        // Assigment unique ids to participants
+                        for (int i = 0; i < selectedParticipants.length; i++) {
+                          selectedParticipants[i] = Participant(
+                            id: i,
+                            person: selectedParticipants[i].person,
+                            items: selectedParticipants[i].items,
+                          );
+                        }
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => AssignmentPage(
+                                  receipt: receipt!, //TODO: danger here
+                                  participants: selectedParticipants,
+                                ),
+                          ),
+                        );
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

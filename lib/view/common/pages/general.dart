@@ -11,7 +11,7 @@ abstract class GeneralPageViewState<T extends StatefulWidget> extends State<T> {
     String? title = getTitle();
 
     return Scaffold(
-      extendBody: true,
+      extendBody: false,
       appBar:
           title != null
               ? AppBar(

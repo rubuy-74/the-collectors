@@ -10,22 +10,23 @@ class AccountMbwaySelector extends StatefulWidget {
 }
 
 class _AccountMbwaySelectorState extends State<AccountMbwaySelector> {
-  Set<AccountType> selection = {AccountType.mbway}; 
+  Set<AccountType> selection = {AccountType.mbway};
 
   @override
   Widget build(BuildContext context) {
-    final String mbwayImagePath = selection.contains(AccountType.mbway)
-    ? 'assets/imgs/mb-way-white.png'
-    : 'assets/imgs/mb-way-black.png';
+    final String mbwayImagePath =
+        selection.contains(AccountType.mbway)
+            ? 'assets/imgs/mb-way-white.png'
+            : 'assets/imgs/mb-way-black.png';
 
     return SegmentedButton<AccountType>(
       segments: <ButtonSegment<AccountType>>[
         ButtonSegment<AccountType>(
           value: AccountType.conta,
           label: Row(
-            mainAxisSize: MainAxisSize.min, 
+            mainAxisSize: MainAxisSize.min,
             children: const [
-              Icon(Icons.person_add_alt_1_outlined), 
+              Icon(Icons.person_add_alt_1_outlined),
               SizedBox(width: 8),
               Text('Conta'),
             ],
@@ -33,17 +34,14 @@ class _AccountMbwaySelectorState extends State<AccountMbwaySelector> {
         ),
         ButtonSegment<AccountType>(
           value: AccountType.mbway,
-          label: Image.asset(
-            mbwayImagePath,
-            height: 20, 
-          ),
+          label: Image.asset(mbwayImagePath, height: 20),
         ),
       ],
       selected: selection,
       onSelectionChanged: (Set<AccountType> newSelection) {
         if (newSelection.isNotEmpty) {
           setState(() {
-            selection = {newSelection.first}; 
+            selection = {newSelection.first};
           });
         }
       },
@@ -51,8 +49,8 @@ class _AccountMbwaySelectorState extends State<AccountMbwaySelector> {
         selectedBackgroundColor: Colors.green[700],
         selectedForegroundColor: Colors.white,
       ),
-      showSelectedIcon: false, 
-      multiSelectionEnabled: false, 
+      showSelectedIcon: false,
+      multiSelectionEnabled: false,
       emptySelectionAllowed: false,
     );
   }

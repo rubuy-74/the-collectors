@@ -1,8 +1,8 @@
-import 'package:usettle/view/home/pending_invoice_card.dart'; 
+import 'package:usettle/view/home/pending_invoice_card.dart';
 import 'package:usettle/view/common/pages/general.dart';
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart'; 
-import 'package:usettle/view/home/summary_card.dart'; 
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:usettle/view/home/summary_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,12 +13,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends GeneralPageViewState<HomePage> {
   @override
-  String? getTitle() => null; 
+  String? getTitle() => null;
 
   @override
   Widget getBody(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView( 
+      child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -29,7 +29,7 @@ class _HomePageState extends GeneralPageViewState<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0, bottom: 15.0), 
+                    padding: const EdgeInsets.only(left: 10.0, bottom: 15.0),
                     child: Image.asset(
                       'assets/imgs/extended_logo.png',
                       height: 50,
@@ -42,13 +42,18 @@ class _HomePageState extends GeneralPageViewState<HomePage> {
                       children: [
                         Text(
                           "Faturas Pendentes",
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white, 
-                              ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                          icon: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white,
+                          ),
                           onPressed: () {
                             Navigator.pushNamed(context, '/history');
                           },
@@ -87,23 +92,30 @@ class _HomePageState extends GeneralPageViewState<HomePage> {
               ),
             ),
 
-            Padding( 
+            Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 12.0), 
+                  const SizedBox(height: 12.0),
                   Text(
                     "Resumo Contas",
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 16.0),
-                  SummaryCard( 
+                  SummaryCard(
                     title: "Devem-me",
                     amount: "42,30€",
                     peopleCount: 4,
                     actionText: "PEDIR",
-                    iconWidget: Image.asset('assets/imgs/mb-way-black.png', height: 30, width: 50, fit: BoxFit.contain),
+                    iconWidget: Image.asset(
+                      'assets/imgs/mb-way-black.png',
+                      height: 30,
+                      width: 50,
+                      fit: BoxFit.contain,
+                    ),
                     isOwedToUser: true,
                   ),
                   const SizedBox(height: 16.0),
@@ -112,7 +124,11 @@ class _HomePageState extends GeneralPageViewState<HomePage> {
                     amount: "14,00€",
                     peopleCount: 2,
                     actionText: "LIQUIDAR",
-                    iconWidget: PhosphorIcon(PhosphorIconsRegular.fingerprint, size: 30, color: Colors.black87),
+                    iconWidget: PhosphorIcon(
+                      PhosphorIconsRegular.fingerprint,
+                      size: 30,
+                      color: Colors.black87,
+                    ),
                     isOwedToUser: false,
                   ),
                 ],
